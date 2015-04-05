@@ -66,7 +66,7 @@ func (l *MultiLog) Panic(m string, err error, kv ...KV) interface{} {
 	lm := &LogMessage{
 		Message: m,
 		Error:   err.Error(),
-		Details: collapse(kv),
+		Details: CollapseKV(kv),
 		Kind:    KindPanic,
 	}
 	l.log(lm)
@@ -78,7 +78,7 @@ func (l *MultiLog) Error(m string, err error, kv ...KV) {
 	lm := &LogMessage{
 		Message: m,
 		Error:   err.Error(),
-		Details: collapse(kv),
+		Details: CollapseKV(kv),
 		Kind:    KindError,
 	}
 	l.log(lm)
@@ -87,7 +87,7 @@ func (l *MultiLog) Error(m string, err error, kv ...KV) {
 func (l *MultiLog) Warn(m string, kv ...KV) {
 	lm := &LogMessage{
 		Message: m,
-		Details: collapse(kv),
+		Details: CollapseKV(kv),
 		Kind:    KindWarn,
 	}
 	l.log(lm)
@@ -96,7 +96,7 @@ func (l *MultiLog) Warn(m string, kv ...KV) {
 func (l *MultiLog) Inform(m string, kv ...KV) {
 	lm := &LogMessage{
 		Message: m,
-		Details: collapse(kv),
+		Details: CollapseKV(kv),
 		Kind:    KindInform,
 	}
 	l.log(lm)
@@ -105,7 +105,7 @@ func (l *MultiLog) Inform(m string, kv ...KV) {
 func (l *MultiLog) Verbose(m string, kv ...KV) {
 	lm := &LogMessage{
 		Message: m,
-		Details: collapse(kv),
+		Details: CollapseKV(kv),
 		Kind:    KindVerbose,
 	}
 	l.log(lm)
@@ -139,7 +139,7 @@ func (l *MultiLog) Timeout(m string, err error, kv ...KV) {
 	lm := &LogMessage{
 		Message: m,
 		Error:   err.Error(),
-		Details: collapse(kv),
+		Details: CollapseKV(kv),
 		Kind:    KindTimeout,
 	}
 	l.log(lm)
@@ -149,7 +149,7 @@ func (l *MultiLog) ConnectFail(m string, err error, kv ...KV) {
 	lm := &LogMessage{
 		Message: m,
 		Error:   err.Error(),
-		Details: collapse(kv),
+		Details: CollapseKV(kv),
 		Kind:    KindConnect,
 	}
 	l.log(lm)

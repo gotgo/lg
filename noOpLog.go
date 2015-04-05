@@ -17,7 +17,7 @@ func (l *NoOpLogger) Panic(m string, err error, kv ...KV) interface{} {
 	msg := &LogMessage{
 		Message: m,
 		Error:   err.Error(),
-		Details: collapse(kv),
+		Details: CollapseKV(kv),
 		Level:   LevelPanic,
 		Kind:    KindPanic,
 	}

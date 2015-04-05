@@ -80,7 +80,7 @@ type LogMessage struct {
 	Correlate map[string]string `json:"correlate,omitempty"`
 }
 
-func collapse(kvs []KV) KV {
+func CollapseKV(kvs []KV) KV {
 	if kvs == nil {
 		return nil
 	} else if len(kvs) == 0 {
