@@ -1,5 +1,7 @@
 package lg
 
+//TODO: break out into seperate repo
+
 import "github.com/Sirupsen/logrus"
 
 // Create a new instance of the logger. You can have any number of instances.

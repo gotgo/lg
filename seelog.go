@@ -1,5 +1,7 @@
 package lg
 
+//TODO: break out into seperate repo
+
 import (
 	"encoding/json"
 	"errors"
