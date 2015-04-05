@@ -30,14 +30,14 @@ const (
 
 type LevelLogger interface {
 	// usage panic(lg.Panic("crap!", err))
-	Panic(m string, err error, kv ...*KV) interface{}
-	Error(m string, err error, kv ...*KV) //do we have a message here?
-	Warn(m string, kv ...*KV)
+	Panic(m string, err error, kv ...KV) interface{}
+	Error(m string, err error, kv ...KV) //do we have a message here?
+	Warn(m string, kv ...KV)
 
 	// lg.Inform("Server Started", lg.KV{"config", config, "port", port}
-	Inform(m string, kv ...*KV)
+	Inform(m string, kv ...KV)
 
-	Verbose(m string, kv ...*KV) //debug
+	Verbose(m string, kv ...KV) //debug
 
 	Message(m *LogMessage)
 }
@@ -54,8 +54,8 @@ type Logger interface {
 	// what's wrong with the source data that causes the problem
 	UnmarshalFail(m string, data []byte, err error)
 
-	Timeout(m string, err error, kv ...*KV)
-	ConnectFail(m string, err error, kv ...*KV)
+	Timeout(m string, err error, kv ...KV)
+	ConnectFail(m string, err error, kv ...KV)
 }
 
 type LogReceiver interface {
@@ -65,7 +65,7 @@ type LogReceiver interface {
 
 type LogMessage struct {
 	Message string `json:"message"`
-	Details *KV    `json:"details,omitempty"`
+	Details KV     `json:"details,omitempty"`
 	Kind    Kind   `json:"kind,omitempty"`
 	Level   Level  `json:"level,omitempty"`
 
@@ -78,4 +78,22 @@ type LogMessage struct {
 	// 4. file name
 	// 5. func name
 	Correlate map[string]string `json:"correlate,omitempty"`
+}
+
+func collapse(kvs []KV) KV {
+	if kvs == nil {
+		return nil
+	} else if len(kvs) == 0 {
+		return KV{}
+	} else if len(kvs) == 1 {
+		return kvs[0]
+	} else {
+		data := KV{}
+		for _, mp := range kvs {
+			for k, v := range mp {
+				data[k] = v
+			}
+		}
+		return data
+	}
 }

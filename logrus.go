@@ -5,11 +5,11 @@ import "github.com/Sirupsen/logrus"
 // Create a new instance of the logger. You can have any number of instances.
 //var log = logrus.New()
 
-type Logrus struct {
+type LogrusReceiver struct {
 }
 
-func (l *Logrus) getFields(m *LogMessage) logrus.Fields {
-	d := Fields{}
+func (l *LogrusReceiver) getFields(m *LogMessage) logrus.Fields {
+	d := logrus.Fields{}
 
 	if m.Details != nil {
 		for k, v := range m.Details {
@@ -25,7 +25,7 @@ func (l *Logrus) getFields(m *LogMessage) logrus.Fields {
 	return d
 }
 
-func (l *Logrus) Message(m *LogMessage) {
+func (l *LogrusReceiver) Message(m *LogMessage) {
 	e := logrus.WithFields(l.getFields(m))
 	switch m.Level {
 	case LevelVerbose:
@@ -39,10 +39,10 @@ func (l *Logrus) Message(m *LogMessage) {
 	case LevelPanic:
 		e.Panic(m.Message)
 	default:
-		d.Info(m.Message)
+		e.Info(m.Message)
 	}
 }
 
-func (l *Logrus) Levels() []Level {
+func (l *LogrusReceiver) Levels() []Level {
 	return []Level{LevelAll}
 }

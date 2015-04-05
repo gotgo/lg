@@ -1,11 +1,16 @@
 package lg
 
 import (
+	"encoding/json"
 	"errors"
 	"io"
 
 	"github.com/cihub/seelog"
 )
+
+//even though Logger is an instance, all instances are using the same
+//singleton logger. it's unclear if this should stay this way
+var logger seelog.LoggerInterface
 
 func init() {
 	DisableLog()
@@ -48,6 +53,32 @@ type RequstLogger interface {
 	Capture(service string, name string, args map[string]string, duration int, outcome bool)
 }
 
-func NewLogger() Logger {
-	return new(StdLogger)
+type SeeLog struct {
+}
+
+func (l *SeeLog) Message(m *LogMessage) {
+	bytes, err := json.Marshal(m)
+	if err != nil {
+		panic("could not log event because of marshal fail")
+	}
+
+	str := string(bytes)
+	switch m.Level {
+	case LevelInform:
+		logger.Info(str)
+	case LevelVerbose:
+		logger.Debug(str)
+	case LevelWarn:
+		logger.Warn(str)
+	case LevelError:
+		logger.Error(str)
+	case LevelPanic:
+		logger.Critical(str)
+	default:
+		logger.Info(str)
+	}
+}
+
+func (l *SeeLog) Levels() []Level {
+	return []Level{LevelAll}
 }

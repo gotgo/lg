@@ -26,7 +26,7 @@ type CallContext struct {
 	FullPath   string `json:"fullPath,omitepmpty"`
 }
 
-func CallContext(skipFrames int) (*CallContext, error) {
+func CallerContext(skipFrames int) (*CallContext, error) {
 	if skipFrames < 0 {
 		return nil, errors.New("negative stack frames not supported")
 	}
@@ -41,7 +41,7 @@ func CallContext(skipFrames int) (*CallContext, error) {
 		shortPath = fullPath
 	}
 
-	funcName = runtime.FuncForPC(pc).Name()
+	funcName := runtime.FuncForPC(pc).Name()
 
 	if name, err := filepath.Rel(workingDir, funcName); err == nil {
 		funcName = name
@@ -52,7 +52,7 @@ func CallContext(skipFrames int) (*CallContext, error) {
 	caller := &CallContext{
 		LineNumber: line,
 		FuncName:   funcName,
-		Filenme:    filename,
+		Filename:   filename,
 		ShortPath:  shortPath,
 		FullPath:   fullPath,
 	}
