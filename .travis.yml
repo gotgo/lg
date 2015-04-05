@@ -1,0 +1,16 @@
+language: go
+
+go:
+    - 1.4
+    - tip
+
+sudo: false
+
+install: go get -v -t ./...
+
+script:
+   - go test -v ./...
+
+branches:
+  only:
+    - master
