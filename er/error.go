@@ -104,20 +104,24 @@ func NewApiErr(message string, err error, statusCode int, statusMessage string, 
 	return r
 }
 
-func collapse(kvs []KV) KV {
+func collapse(kvs []KV, values ...KV) KV {
 	if kvs == nil {
-		return nil
-	} else if len(kvs) == 0 {
-		return KV{}
-	} else if len(kvs) == 1 {
-		return kvs[0]
-	} else {
+		kvs = append([]KV{}, values...)
+	}
+	if len(kvs) > 1 {
 		data := KV{}
 		for _, mp := range kvs {
+			if mp == nil {
+				continue
+			}
 			for k, v := range mp {
 				data[k] = v
 			}
 		}
 		return data
+	} else if len(kvs) == 1 {
+		return kvs[0]
+	} else {
+		return nil
 	}
 }

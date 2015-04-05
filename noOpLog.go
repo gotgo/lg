@@ -14,10 +14,10 @@ type NoOpLogger struct {
 }
 
 func (l *NoOpLogger) Panic(m string, err error, kv ...KV) interface{} {
+	kerr := getError(err)
 	msg := &LogMessage{
 		Message: m,
-		Error:   err.Error(),
-		Details: CollapseKV(kv),
+		Details: collapse(kv, kerr),
 		Level:   LevelPanic,
 		Kind:    KindPanic,
 	}

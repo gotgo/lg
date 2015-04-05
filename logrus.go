@@ -18,7 +18,6 @@ func (l *LogrusReceiver) getFields(m *LogMessage) logrus.Fields {
 	}
 
 	d["kind"] = m.Kind
-	d["error"] = m.Error
 	if m.Correlate != nil {
 		d["correlate"] = m.Correlate //copy instead??
 	}

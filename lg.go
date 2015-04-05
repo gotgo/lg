@@ -69,8 +69,7 @@ type LogMessage struct {
 	Level   Level  `json:"level,omitempty"`
 	Kind    Kind   `json:"kind,omitempty"`
 
-	//Do we leave this here? or put errors in Details
-	Error string `json:"error,omitempty"` //TODO
+	index int64
 
 	// Options
 	// 1. traceuid
@@ -81,20 +80,25 @@ type LogMessage struct {
 	Correlate map[string]string `json:"correlate,omitempty"`
 }
 
-func CollapseKV(kvs []KV) KV {
+func collapse(kvs []KV, values ...KV) KV {
 	if kvs == nil {
-		return nil
-	} else if len(kvs) == 0 {
-		return KV{}
-	} else if len(kvs) == 1 {
-		return kvs[0]
-	} else {
+		kvs = append([]KV{}, values...)
+	}
+
+	if len(kvs) > 1 {
 		data := KV{}
 		for _, mp := range kvs {
+			if mp == nil {
+				continue
+			}
 			for k, v := range mp {
 				data[k] = v
 			}
 		}
 		return data
+	} else if len(kvs) == 1 {
+		return kvs[0]
+	} else {
+		return nil
 	}
 }
