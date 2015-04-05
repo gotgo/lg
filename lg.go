@@ -66,9 +66,10 @@ type LogReceiver interface {
 type LogMessage struct {
 	Message string `json:"message"`
 	Details KV     `json:"details,omitempty"`
-	Kind    Kind   `json:"kind,omitempty"`
 	Level   Level  `json:"level,omitempty"`
+	Kind    Kind   `json:"kind,omitempty"`
 
+	//Do we leave this here? or put errors in Details
 	Error string `json:"error,omitempty"` //TODO
 
 	// Options

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strconv"
 	"sync"
+
+	"github.com/gotgo/lg/er"
 )
 
 const stackCallDepth = 2
@@ -37,7 +39,7 @@ func (l *MultiLog) log(m *LogMessage) {
 	const stackCallDepth = 2
 
 	if l.skipCallContext == true {
-		caller, err := CallerContext(stackCallDepth + l.extraStackDepth)
+		caller, err := er.CallerContext(stackCallDepth + l.extraStackDepth)
 		if m.Correlate == nil {
 			m.Correlate = make(map[string]string)
 		}
@@ -75,6 +77,7 @@ func (l *MultiLog) Panic(m string, err error, kv ...KV) interface{} {
 }
 
 func (l *MultiLog) Error(m string, err error, kv ...KV) {
+
 	lm := &LogMessage{
 		Message: m,
 		Error:   err.Error(),

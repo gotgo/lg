@@ -3,18 +3,18 @@ package er
 import (
 	"encoding/json"
 
-	"github.com/gotgo/lg"
-
 	"runtime"
 )
 
+type KV map[string]interface{}
+
 type Error struct {
-	Message  string          `json:"message,omitempty"`
-	Location *lg.CallContext `json:"location,omitempty"`
-	Details  lg.KV           `json:"details,omitempty"`
-	Nested   *Error          `json:"nested,omitempty"`
-	External error           `json:"external,omitempty"` // inner or source error
-	Stack    string          `json:"stack,omitempty"`
+	Message  string       `json:"message,omitempty"`
+	Location *CallContext `json:"location,omitempty"`
+	Details  KV           `json:"details,omitempty"`
+	Nested   *Error       `json:"nested,omitempty"`
+	External error        `json:"external,omitempty"` // inner or source error
+	Stack    string       `json:"stack,omitempty"`
 }
 
 func (e *Error) Error() string {
@@ -30,22 +30,22 @@ func stackBuffer() []byte {
 	return make([]byte, size)
 }
 
-func NewErr(message string, details ...lg.KV) *Error {
+func NewErr(message string, details ...KV) *Error {
 	buf := stackBuffer()
 	n := runtime.Stack(buf, false)
 	stackTrace := string(buf[:n])
-	ctx, _ := lg.CallerContext(1)
+	ctx, _ := CallerContext(1)
 	return &Error{
 		Message:  message,
 		Location: ctx,
-		Details:  lg.CollapseKV(details),
+		Details:  collapse(details),
 		Nested:   nil,
 		External: nil,
 		Stack:    stackTrace,
 	}
 }
 
-func Err(err error, message string, details ...lg.KV) *Error {
+func Err(err error, message string, details ...KV) *Error {
 	stackTrace := ""
 	var external error = nil
 
@@ -58,12 +58,12 @@ func Err(err error, message string, details ...lg.KV) *Error {
 		n := runtime.Stack(buf, false)
 		stackTrace = string(buf[:n])
 	}
-	ctx, _ := lg.CallerContext(1)
+	ctx, _ := CallerContext(1)
 
 	return &Error{
 		Message:  message,
 		Location: ctx,
-		Details:  lg.CollapseKV(details),
+		Details:  collapse(details),
 		Nested:   nested,
 		External: external,
 		Stack:    stackTrace,
@@ -76,7 +76,7 @@ type ApiError struct {
 	StatusMessage string `json:"statusMessage,omitempty"`
 }
 
-func NewApiErr(message string, err error, statusCode int, statusMessage string, details ...lg.KV) *ApiError {
+func NewApiErr(message string, err error, statusCode int, statusMessage string, details ...KV) *ApiError {
 	stackTrace := ""
 	var external error = nil
 
@@ -89,7 +89,7 @@ func NewApiErr(message string, err error, statusCode int, statusMessage string, 
 		n := runtime.Stack(buf, false)
 		stackTrace = string(buf[:n])
 	}
-	ctx, _ := lg.CallerContext(1)
+	ctx, _ := CallerContext(1)
 
 	r := &ApiError{
 		StatusCode:    statusCode,
@@ -97,9 +97,27 @@ func NewApiErr(message string, err error, statusCode int, statusMessage string, 
 	}
 	r.Message = message
 	r.Location = ctx
-	r.Details = lg.CollapseKV(details)
+	r.Details = collapse(details)
 	r.Nested = nested
 	r.External = external
 	r.Stack = stackTrace
 	return r
+}
+
+func collapse(kvs []KV) KV {
+	if kvs == nil {
+		return nil
+	} else if len(kvs) == 0 {
+		return KV{}
+	} else if len(kvs) == 1 {
+		return kvs[0]
+	} else {
+		data := KV{}
+		for _, mp := range kvs {
+			for k, v := range mp {
+				data[k] = v
+			}
+		}
+		return data
+	}
 }
