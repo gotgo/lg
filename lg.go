@@ -1,5 +1,7 @@
 package lg
 
+import "time"
+
 type KV map[string]interface{}
 
 type Kind string
@@ -28,6 +30,26 @@ const (
 	LevelPanic
 )
 
+type Config interface {
+	LogFolder() string     //path to logging folder
+	MaxAge() time.Duration //min age 1 day?
+	MaxBackups() int
+	MaxSizeMB() int //TODO: use custom datatype??
+	Level() string
+}
+
+type LogConfig struct {
+	Folder    string
+	MaxAge    time.Duration //1 day
+	MaxFiles  int
+	MaxSizeMB int
+	Level     string
+
+	CrashFilename string //crash-2015-04-30_T02-23-00-234.log
+	MainFilename  string //current
+	AlertFilename string //alert.log
+}
+
 type LevelLogger interface {
 	// usage panic(lg.Panic("crap!", err))
 	Panic(m string, err error, kv ...KV) interface{}
@@ -40,6 +62,8 @@ type LevelLogger interface {
 	Verbose(m string, kv ...KV) //debug
 
 	Message(m *LogMessage)
+
+	AddReceiver(r LogReceiver)
 }
 
 type Logger interface {

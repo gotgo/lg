@@ -29,3 +29,4 @@ func (l *NoOpLogger) Warn(m string, kv ...KV)             {}
 func (l *NoOpLogger) Inform(m string, kv ...KV)           {}
 func (l *NoOpLogger) Verbose(m string, kv ...KV)          {}
 func (l *NoOpLogger) Message(m *LogMessage)               {}
+func (l *NoOpLogger) AddReceiver(r LogReceiver)           {}

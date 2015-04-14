@@ -2,12 +2,17 @@ package lg
 
 //TODO: break out into seperate repo
 
-import "github.com/Sirupsen/logrus"
+import (
+	"sync"
 
-// Create a new instance of the logger. You can have any number of instances.
-//var log = logrus.New()
+	"github.com/Sirupsen/logrus"
+)
+
+var log = logrus.New()
 
 type LogrusReceiver struct {
+	log  *logrus.Logger
+	once sync.Once
 }
 
 func (l *LogrusReceiver) getFields(m *LogMessage) logrus.Fields {
@@ -26,8 +31,20 @@ func (l *LogrusReceiver) getFields(m *LogMessage) logrus.Fields {
 	return d
 }
 
+// Current - return the current Logrus instance to customize
+func (l *LogrusReceiver) Current() *logrus.Logger {
+	l.once.Do(func() {
+		log := logrus.New()
+		log.Formatter = new(logrus.JSONFormatter)
+		log.Level = logrus.DebugLevel
+		l.log = log
+	})
+	return l.log
+}
+
 func (l *LogrusReceiver) Message(m *LogMessage) {
-	e := logrus.WithFields(l.getFields(m))
+	e := l.Current().WithFields(l.getFields(m))
+
 	switch m.Level {
 	case LevelVerbose:
 		e.Debug(m.Message)

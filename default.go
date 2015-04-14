@@ -1,14 +1,29 @@
 package lg
 
+import "sync"
+
 // the default logger
 var defaultLogger LevelLogger
 
 // the current logger
 var current LevelLogger
+var mu sync.Mutex
 
 func init() {
-	defaultLogger = NewNoOpLogger()
+	defaultLogger = &MultiLog{}
 	current = defaultLogger
+}
+
+func Use(l LevelLogger) {
+	mu.Lock()
+	defer mu.Unlock()
+	current = l
+}
+
+func AddReceiver(r LogReceiver) {
+	mu.Lock()
+	defer mu.Unlock()
+	current.AddReceiver(r)
 }
 
 func Panic(m string, err error, kv ...KV) interface{} {

@@ -24,6 +24,7 @@ func (l *MultiLog) AddReceiver(r LogReceiver) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 
+	//TODO: copy whole list and swap
 	for _, level := range r.Levels() {
 		if level == LevelAll {
 			l.receiveAll = append(l.receiveAll, r)
