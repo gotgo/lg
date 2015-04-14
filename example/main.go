@@ -59,7 +59,7 @@ func main() {
 	reloadOnSIGHUP()
 
 	run(func() {
-		time.Sleep(time.Second * 45)
+		time.Sleep(time.Second * 32)
 	}, func() {
 		time.Sleep(time.Second * 2)
 	})
