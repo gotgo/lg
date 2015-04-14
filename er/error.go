@@ -34,6 +34,7 @@ func NewErr(message string, details ...KV) *Error {
 	buf := stackBuffer()
 	n := runtime.Stack(buf, false)
 	stackTrace := string(buf[:n])
+
 	ctx, _ := CallerContext(1)
 	return &Error{
 		Message:  message,
